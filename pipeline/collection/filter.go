@@ -198,10 +198,14 @@ var FilterObjectsExistNot pipeline.StepFn = func(group *pipeline.Group, stepNum 
 		destObj := &storage.Object{
 			Key: obj.Key,
 		}
-		err := group.Target.GetObjectMeta(destObj)
-		if err == nil {
+
+		if err := group.Target.GetObjectMeta(destObj); err != nil {
+			continue
+		} else if err := group.Source.GetObjectMeta(obj); err != nil {
 			continue
 		} else if storage.IsErrNotExist(err) {
+			output <- obj
+		} else if *destObj.ContentLength != *obj.ContentLength {
 			output <- obj
 		} else {
 			errChan <- &pipeline.ObjectError{Object: obj, Err: err}

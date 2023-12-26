@@ -170,7 +170,7 @@ func (st *FSStorage) PutObject(obj *storage.Object) error {
 			return err
 		}
 
-		if err := xattr.FSet(f, "user.s3sync.meta", data); err != nil {
+		if err := xattr.FSet(f, "user.s3sync.meta.set", data); err != nil {
 			return err
 		}
 	}
@@ -229,7 +229,7 @@ func (st *FSStorage) GetObjectMeta(obj *storage.Object) error {
 	}
 
 	if st.xattr {
-		if data, err := xattr.FGet(f, "user.s3sync.meta"); err == nil {
+		if data, err := xattr.FGet(f, "user.s3sync.meta.get"); err == nil {
 			err := json.Unmarshal(data, obj)
 			if err != nil {
 				return err
@@ -255,6 +255,8 @@ func (st *FSStorage) GetObjectMeta(obj *storage.Object) error {
 		Mtime := fileInfo.ModTime()
 		obj.ContentType = &contentType
 		obj.Mtime = &Mtime
+		size := fileInfo.Size()
+		obj.ContentLength = &size
 	}
 
 	return nil

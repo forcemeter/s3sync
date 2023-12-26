@@ -274,6 +274,7 @@ func (st *S3Storage) GetObjectMeta(obj *storage.Object) error {
 	obj.Mtime = result.LastModified
 	obj.CacheControl = result.CacheControl
 	obj.StorageClass = result.StorageClass
+	obj.ContentLength = result.ContentLength
 
 	return nil
 }
